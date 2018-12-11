@@ -11,11 +11,11 @@ namespace TechJobs.Controllers
     {
 
         // Our reference to the data store
-        private static JobData jobData;
+        private static readonly JobData JobData;
 
         static JobController()
         {
-            jobData = JobData.GetInstance();
+            JobData = JobData.GetInstance();
         }
 
         // The detail display for a given Job at URLs like /Job?id=17
@@ -23,21 +23,22 @@ namespace TechJobs.Controllers
         {
             //TODO #1 - get the Job with the given ID and pass it into the view
 
-            Job theJob = jobData.Find(id);
-            NewJobViewModel newJob= new NewJobViewModel();
-
-            newJob.Name = theJob.Name;
-            newJob.EmployerID = theJob.Employer.ID;
-            newJob.CoreCompetencyID = theJob.CoreCompetency.ID;
-            newJob.LocationID = theJob.Location.ID;
-            newJob.PositionTypeID = theJob.PositionType.ID;
+            var theJob = JobData.Find(id);
+            var newJob = new NewJobViewModel
+            {
+                Name = theJob.Name,
+                EmployerId = theJob.Employer.ID,
+                CoreCompetencyId = theJob.CoreCompetency.ID,
+                LocationId = theJob.Location.ID,
+                PositionTypeId = theJob.PositionType.ID
+            };
 
             return View(theJob);
         }
 
         public IActionResult New()
         {
-            NewJobViewModel newJobViewModel = new NewJobViewModel();
+            var newJobViewModel = new NewJobViewModel();
             return View(newJobViewModel);
         }
 
@@ -49,26 +50,23 @@ namespace TechJobs.Controllers
             // redirect to the Job detail (Index) action/view for the new Job
 
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(newJobViewModel);
+            var newJob = new Job
             {
-                Job newJob = new Job
-                {
-                    Name = newJobViewModel.Name,
-                    Employer = jobData.Employers.Find(newJobViewModel.EmployerID),
-                    Location = jobData.Locations.Find(newJobViewModel.LocationID),
-                    CoreCompetency = jobData.CoreCompetencies.Find(newJobViewModel.CoreCompetencyID),
-                    PositionType = jobData.PositionTypes.Find(newJobViewModel.PositionTypeID)
-                };
+                Name = newJobViewModel.Name,
+                Employer = JobData.Employers.Find(newJobViewModel.EmployerId),
+                Location = JobData.Locations.Find(newJobViewModel.LocationId),
+                CoreCompetency = JobData.CoreCompetencies.Find(newJobViewModel.CoreCompetencyId),
+                PositionType = JobData.PositionTypes.Find(newJobViewModel.PositionTypeId)
+            };
 
-                jobData.Jobs.Add(newJob);
-                return Redirect(String.Format("/job?id={0}", newJob.ID));
-            }
+            JobData.Jobs.Add(newJob);
+            return Redirect(string.Format("/job?id={0}", newJob.ID));
 
             //JobData data = JobData.GetInstance();
             //Job newJob = new Job();
             //newJob.Employer = data.Employers.Find(newJobViewModel.EmployerID.ID);
 
-            return View(newJobViewModel);
         }
     }
 }

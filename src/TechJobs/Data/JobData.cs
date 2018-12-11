@@ -26,12 +26,7 @@ namespace TechJobs.Data
         private static JobData instance;
         public static JobData GetInstance()
         {
-            if (instance == null)
-            {
-                instance = new JobData();
-            }
-
-            return instance;
+            return instance ?? (instance = new JobData());
         }
 
 

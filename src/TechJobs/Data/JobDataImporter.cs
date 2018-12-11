@@ -20,22 +20,22 @@ namespace TechJobs.Data
                 return;
             }
 
-            List<string[]> rows = new List<string[]>();
+            var rows = new List<string[]>();
 
-            using (StreamReader reader = File.OpenText("Data/job_data.csv"))
+            using (var reader = File.OpenText("Data/job_data.csv"))
             {
                 while (reader.Peek() >= 0)
                 {
                     string line = reader.ReadLine();
-                    string[] rowArrray = CSVRowToStringArray(line);
-                    if (rowArrray.Length > 0)
+                    var rowArray = CSVRowToStringArray(line);
+                    if (rowArray.Length > 0)
                     {
-                        rows.Add(rowArrray);
+                        rows.Add(rowArray);
                     }
                 }
             }
 
-            string[] headers = rows[0];
+            var headers = rows[0];
             rows.Remove(headers);
 
             /**
@@ -43,14 +43,14 @@ namespace TechJobs.Data
              * Assumes CSV column ordering: 
              *      name,employer,location,position type,core competency
              */
-            foreach (string[] row in rows)
+            foreach (var row in rows)
             {
-                Employer employer = jobData.Employers.AddUnique(row[1]);
-                Location location = jobData.Locations.AddUnique(row[2]);
-                PositionType positionType = jobData.PositionTypes.AddUnique(row[3]);
-                CoreCompetency coreCompetency = jobData.CoreCompetencies.AddUnique(row[4]);
+                var employer = jobData.Employers.AddUnique(row[1]);
+                var location = jobData.Locations.AddUnique(row[2]);
+                var positionType = jobData.PositionTypes.AddUnique(row[3]);
+                var coreCompetency = jobData.CoreCompetencies.AddUnique(row[4]);
 
-                Job newJob = new Job
+                var newJob = new Job
                 {
                     Name = row[0],
                     Employer = employer,
@@ -70,9 +70,9 @@ namespace TechJobs.Data
          */
         private static string[] CSVRowToStringArray(string row, char fieldSeparator = ',', char stringSeparator = '\"')
         {
-            bool isBetweenQuotes = false;
-            StringBuilder valueBuilder = new StringBuilder();
-            List<string> rowValues = new List<string>();
+            var isBetweenQuotes = false;
+            var valueBuilder = new StringBuilder();
+            var rowValues = new List<string>();
 
             // Loop through the row string one char at a time
             foreach (char c in row.ToCharArray())

@@ -9,21 +9,21 @@ namespace TechJobs.Data
     public class JobFieldData<TField> where TField : JobField, new()
     {
 
-        private List<TField> allFields = new List<TField>();
+        private List<TField> _allFields = new List<TField>();
 
         private void Add(TField field)
         {
-            allFields.Add(field);
+            _allFields.Add(field);
         }
 
         public List<TField> ToList()
         {
-            return allFields;
+            return _allFields;
         }
 
         public TField Find(int id)
         {
-            var results = from field in allFields
+            var results = from field in _allFields
                           where field.ID == id
                           select field;
 
@@ -33,7 +33,7 @@ namespace TechJobs.Data
         internal TField AddUnique(string fieldValue)
         {
 
-            var results = from field in allFields
+            var results = from field in _allFields
                           where field.Value.Equals(fieldValue)
                           select field;
 
@@ -41,8 +41,7 @@ namespace TechJobs.Data
 
             if (!results.Any())
             {
-                theField = new TField();
-                theField.Value = fieldValue;
+                theField = new TField {Value = fieldValue};
 
                 Add(theField);
             }
